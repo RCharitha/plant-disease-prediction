@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} - Plant Disease Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #2e7d32;
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin-right: 20px;
+        }
+
+        .blog-detail {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .blog-media {
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .blog-media img,
+        .blog-media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 30px;
+        }
+
+        .blog-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #2e7d32;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+
+        .blog-body {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .blog-body p {
+            margin-bottom: 1.5rem;
+        }
+
+        .blog-body ul, .blog-body ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        .blog-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-body strong {
+            color: #2e7d32;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            color: #e91e63;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .like-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .liked {
+            color: #c2185b;
+        }
+
+        footer {
+            background-color: #1b5e20;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Video container styling */
+        .video-container {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .video-container video {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                    <h1>Plant Disease Detection</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="blog-detail">
+            {% if post.type == 'video' and post.image %}
+            <div class="blog-media">
+                <video controls>
+                    <source src="{{ post.image }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            {% elif post.image %}
+            <div class="blog-media">
+                <img src="{{ post.image }}" alt="{{ post.title }}">
+            </div>
+            {% endif %}
+            
+            <div class="blog-content">
+                <h1 class="blog-title">{{ post.title }}</h1>
+                
+                <div class="blog-meta">
+                    <span>By {{ post.author }} • {{ post.date }}</span>
+                    <button class="like-btn" data-id="{{ post.id }}">
+                        <i class="far fa-heart"></i> <span>{{ post.likes }}</span>
+                    </button>
+                </div>
+                
+                <div class="blog-body">
+                    {{ post.content | replace('\n', '<br>') | safe }}
+                </div>
+
+                <!-- Additional video section if the content contains video references -->
+                {% if post.content and 'video' in post.content.lower() and post.type == 'video' and post.image %}
+                <div class="video-container">
+                    <h3>Video Demonstration</h3>
+                    <video controls width="100%">
+                        <source src="{{ post.image }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Plant Disease Detection Project. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeBtn = document.querySelector('.like-btn');
+            
+            likeBtn.addEventListener('click', function() {
+                const postId = parseInt(this.getAttribute('data-id'));
+                const heartIcon = this.querySelector('i');
+                const likeCount = this.querySelector('span');
+                
+                // Send like to server
+                fetch(`/blog/${postId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update like count
+                        likeCount.textContent = data.likes;
+                        
+                        // Toggle liked state visually
+                        this.classList.toggle('liked');
+                        if (this.classList.contains('liked')) {
+                            heartIcon.className = 'fas fa-heart';
+                        } else {
+                            heartIcon.className = 'far fa-heart';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

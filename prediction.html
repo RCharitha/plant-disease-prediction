@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f5f0;
+            text-align: center;
+            padding: 30px;
+        }
+        .container {
+            background: white;
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        img {
+            max-width: 300px;
+            margin: 20px 0;
+        }
+        .back {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🌱 Prediction Result</h2>
+        <img src="{{ image_path }}" alt="Uploaded Plant Image">
+        
+        <h3>Disease: <span style="color: green">{{ disease }}</span></h3>
+        <p><strong>Cause:</strong> {{ cause }}</p>
+        <p><strong>Precaution / Cure:</strong> {{ cure }}</p>
+        <div class="back">
+            <a href="/dashboard">🔙 Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

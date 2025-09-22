@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            border: 40px;
+            align-items: center;
+            text-align: center;
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+    <div  class="container">
+        <h1>🌦️ Weather-based Risk Analysis</h1>
+        {% if gps_data %}
+        <div>
+            <p><strong>Risk Level:</strong> {{ gps_data.risk_level }}</p>
+            <p><strong>Temperature:</strong> {{ gps_data.temperature }} °C</p>
+            <p><strong>Humidity:</strong> {{ gps_data.humidity }} %</p>
+            <p><strong>Warning:</strong> {{ gps_data.warning }}</p>
+            <p><strong>Precaution:</strong> {{ gps_data.precautions }}</p>
+        </div>
+        {% endif %}
+        <div class="back">
+            <a href="/dashboard">🔙 Back to Dashboard</a>
+        </div>
+    </div>
+
+    
+</body>
+</html>

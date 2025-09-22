@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmers UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="image-container left-image">
+            <img src="{{ url_for('static', filename='images/image1.jpg') }}" alt="Farmer">
+            <div class="image-text">
+                <h2>Helping Farmers Grow</h2>
+                <p>Our advanced agricultural solutions help farmers increase yield and reduce costs through smart technology.</p>
+            </div>
+        </div>
+
+        <div class="animation-container">
+            
+            <div class="pulse-circle"></div>
+            <div class="pulse-circle delay-1"></div>
+            <div class="pulse-circle delay-2"></div>
+            <div class="animated-icon">🌱</div>
+            
+             
+        </div>
+    
+                
+
+        <div class="image-container right-image">
+            <img src="{{ url_for('static', filename='images/image2.webp') }}" alt="Crops">
+            <a href="{{ url_for('home') }}" class="get-started-box">Get Started</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
