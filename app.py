@@ -8,11 +8,10 @@ import uuid
 from datetime import datetime
 import json
 
-# Import disease info (make sure this file exists)
 try:
     from disease_info import disease_recommendations
 except ImportError:
-    # Fallback in case disease_info.py doesn't exist
+
     disease_recommendations = {
         "default": {
             "cause": "Unknown cause",
@@ -22,17 +21,17 @@ except ImportError:
 
 app = Flask(__name__)
 
-# Configure upload folders
+
 UPLOAD_FOLDER = 'static/uploads'
 BLOG_UPLOAD_FOLDER = 'static/blog_uploads'
-BLOG_DATA_FILE = 'blog_posts.json'  # File to persist blog data
+BLOG_DATA_FILE = 'blog_posts.json'  
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(BLOG_UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['BLOG_UPLOAD_FOLDER'] = BLOG_UPLOAD_FOLDER
 
-# Load blog posts from file or create initial data
+
 def load_blog_posts():
     try:
         if os.path.exists(BLOG_DATA_FILE):
@@ -40,8 +39,7 @@ def load_blog_posts():
                 return json.load(f)
     except:
         pass
-    
-    # Return initial blog posts if file doesn't exist or error
+  
     return [
         {
             'id': 1,
@@ -65,7 +63,7 @@ def load_blog_posts():
         }
     ]
 
-# Save blog posts to file
+
 def save_blog_posts(posts):
     try:
         with open(BLOG_DATA_FILE, 'w') as f:
@@ -73,30 +71,25 @@ def save_blog_posts(posts):
     except:
         pass
 
-# Load blog posts
+
 blog_posts = load_blog_posts()
 
-# ----------------------------
-# Load pre-trained plant disease model
-# ----------------------------
+
 MODEL_DIR = "./plant_disease_model"  
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load model and feature extractor (with error handling)
 try:
     model = AutoModelForImageClassification.from_pretrained(MODEL_DIR)
     feature_extractor = AutoFeatureExtractor.from_pretrained(MODEL_DIR)
     model.to(device)
-    model.eval()  # Set model to evaluation mode
+    model.eval() 
     print("Model loaded successfully")
 except Exception as e:
     print(f"Error loading model: {e}")
     model = None
     feature_extractor = None
 
-# ----------------------------
-# Image preprocessing
-# ----------------------------
+
 def preprocess_image(img_path):
     img = Image.open(img_path).convert("RGB")
     transform = transforms.Compose([
@@ -108,18 +101,16 @@ def preprocess_image(img_path):
     img_tensor = transform(img).unsqueeze(0).to(device)
     return img_tensor
 
-# ----------------------------
-# Helper functions
-# ----------------------------
+
 def save_blog_file(file):
     if file and file.filename != '':
-        # Generate a unique filename
+       
         file_ext = os.path.splitext(file.filename)[1].lower()
         unique_filename = f"{uuid.uuid4().hex}{file_ext}"
         file_path = os.path.join(app.config['BLOG_UPLOAD_FOLDER'], unique_filename)
         file.save(file_path)
         
-        # Determine file type
+   
         if file_ext in ['.mp4', '.mov', '.avi', '.wmv', '.webm']:
             file_type = 'video'
         else:
@@ -128,9 +119,7 @@ def save_blog_file(file):
         return url_for('static', filename=f'blog_uploads/{unique_filename}'), file_type
     return None, None
 
-# ----------------------------
-# Flask routes
-# ----------------------------
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -171,13 +160,13 @@ def predict():
         with torch.no.grad():
             outputs = model(img_tensor)
             logits = outputs.logits
-            probs = torch.nn.functional.softmax(logits, dim=-1)  # Convert to probabilities
-            conf, class_idx = torch.max(probs, dim=-1)  # Get max confidence and class index
+            probs = torch.nn.functional.softmax(logits, dim=-1) 
+            conf, class_idx = torch.max(probs, dim=-1)  
             conf = conf.item()
             class_idx = class_idx.item()
 
-        # Confidence threshold check
-        if conf < 0.7:  # you can adjust threshold (0.6–0.8 usually works well)
+       
+        if conf < 0.7: 
             return render_template(
                 'prediction.html',
                 disease="Uncertain",
@@ -187,10 +176,9 @@ def predict():
                 confidence=f"{conf:.2f}"
             )
 
-        # Get label from model config
         predicted_class = model.config.id2label[class_idx]
 
-        # Get cause and cure from your disease_info.py
+ 
         if predicted_class in disease_recommendations:
             cause = disease_recommendations[predicted_class]['cause']
             cure = disease_recommendations[predicted_class]['cure']
@@ -214,19 +202,18 @@ def gps_predict():
 @app.route('/blog/new', methods=['GET', 'POST'])
 def new_blog_post():
     if request.method == 'POST':
-        # Process the new blog post form data
+       
         title = request.form.get('title')
         content = request.form.get('content')
         author = request.form.get('author')
         image = request.files.get('image')
         
-        # Handle file upload
+
         file_url, file_type = save_blog_file(image)
         
-        # Get current date
+
         current_date = datetime.now().strftime("%B %d, %Y")
-        
-        # Add the new post to the blog_posts list
+
         new_post = {
             'id': len(blog_posts) + 1,
             'title': title,
@@ -235,11 +222,11 @@ def new_blog_post():
             'author': author,
             'date': current_date,
             'likes': 0,
-            'content': content,  # Store full content for potential detail view
-            'type': file_type if file_type else 'image'  # Store file type
+            'content': content, 
+            'type': file_type if file_type else 'image'  
         }
         blog_posts.append(new_post)
-        save_blog_posts(blog_posts)  # Save to file
+        save_blog_posts(blog_posts) 
         
         return redirect(url_for('home'))
     
@@ -274,4 +261,5 @@ def get_blog_posts():
     return jsonify(blog_posts)
 
 if __name__ == '__main__':
+
     app.run(debug=True)
